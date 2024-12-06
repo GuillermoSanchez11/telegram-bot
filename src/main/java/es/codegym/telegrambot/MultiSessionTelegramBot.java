@@ -76,20 +76,30 @@ public class MultiSessionTelegramBot extends TelegramLongPollingBot {
         sendApiMethodAsync(message);
     }
 
-    public void sendPhotoMessageAsync(String photoKey) {
-        SendPhoto photo = createPhotoMessage(photoKey);
+    public void sendPhotoMessageAsync(String imageUrl) {
+        SendPhoto photo = new SendPhoto();
+        // Usar InputFile con una URL de la imagen
+        InputFile inputFile = new InputFile(imageUrl);
+
+        photo.setPhoto(inputFile);
+        Long chatId = getCurrentChatId();
+        photo.setChatId(chatId);
+
+        // Enviar la imagen
         executeAsync(photo);
     }
 
 
-    public SendMessage createMessage( String text) {
+
+    public SendMessage createMessage(String text) {
         SendMessage message = new SendMessage();
-        message.setText(new String(text.getBytes(), StandardCharsets.UTF_8));
+        message.setText(text);
         message.setParseMode("markdown");
         Long chatId = getCurrentChatId();
         message.setChatId(chatId);
         return message;
     }
+
 
     public SendMessage createMessage( String text, Map<String, String> buttons) {
         SendMessage message = createMessage(text);
@@ -106,7 +116,7 @@ public class MultiSessionTelegramBot extends TelegramLongPollingBot {
             String buttonValue = buttons.get(buttonName);
 
             InlineKeyboardButton button = new InlineKeyboardButton();
-            button.setText(new String(buttonName.getBytes(), StandardCharsets.UTF_8));
+            button.setText(buttonName);
             button.setCallbackData(buttonValue);
 
             keyboard.add(List.of(button));
